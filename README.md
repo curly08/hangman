@@ -1,0 +1,1 @@
+I will be building a simple command line Hangman game where one player plays against the computer, but a bit more advanced. This is an opportunity to learn how to save and reload a game.
