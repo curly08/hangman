@@ -9,19 +9,28 @@ class Game
     @word_list = File.read('5desk.txt').split.select { |word| word if word.length.between?(5, 12) }
     @secret_word = word_list.sample
     @display = String.new.ljust(secret_word.length, '_')
+    @game_over = false
   end
 end
 
 # Player class
 class Player
-  def initialize
-    puts 'What is your name?'
-    @name = gets.chomp
+  def initialize(name)
+    @name = name
   end
 end
 
 def choose_letter
-  letter = gets.chomp
+  puts 'Guess a letter!'
+  begin
+    input = gets.chomp
+    return input if input.match(/^[A-Z]+$/i) && input.length == 1
+
+    raise 'Invalid input'
+  rescue
+    puts 'Invalid input. Type one letter.'
+    retry
+  end
 end
 
-Game.new
+# Game.new
