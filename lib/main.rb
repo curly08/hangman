@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
+
 # Game class
 class Game
   attr_accessor :display
@@ -17,20 +19,35 @@ end
 class Player
   def initialize(name)
     @name = name
+    @guessed_letters = []
+  end
+
+  def choose_letter
+    puts 'Guess a letter!'
+    begin
+      input = gets.chomp.downcase
+      raise 'Invalid input! Type a letter.' unless input.match?(/^[a-z]+$/i) && input.length == 1
+      raise 'You have already guessed that letter!' unless @guessed_letters.none?(input)
+
+      @guessed_letters.push(input)
+      input
+    rescue StandardError => e
+      puts e.to_s
+      retry
+    end
   end
 end
 
-def choose_letter
-  puts 'Guess a letter!'
-  begin
-    input = gets.chomp
-    return input if input.match(/^[A-Z]+$/i) && input.length == 1
+# def store_guess(guess)
+#   puts guessed_letters
+# end
 
-    raise 'Invalid input'
-  rescue
-    puts 'Invalid input. Type one letter.'
-    retry
-  end
-end
+
+# def compare_guess(letter, secret_word)
+#   if secret_word.include?(letter) do
+    
+#   end
+# end
 
 # Game.new
+matt = Player.new('matt')
