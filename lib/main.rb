@@ -13,7 +13,7 @@ class Game
     @player = player
     @display = Array.new(secret_word.length, '_')
     @max_wrong_guesses = 6
-    @wrong_guesses = 0
+    @wrong_guesses = []
     @game_over = false
   end
 
@@ -23,6 +23,7 @@ class Game
 
   def play_turn
     puts "\n#{display.join(' ')}\n\n"
+    puts "These are your previous incorrect guesses: #{@wrong_guesses.join(', ')}"
     input = player.choose_letter
     correct_guess?(input) if input.length > 1
     check_for_letter(input) if input.length == 1
@@ -37,8 +38,8 @@ class Game
       @game_over = true
       puts "\nCongrats! You won!"
     else
-      @wrong_guesses += 1
-      puts "\nThat is not the correct word.\nIncorrect Guesses: #{@wrong_guesses}/#{@max_wrong_guesses}"
+      @wrong_guesses.push(guess)
+      puts "\nThat is not the correct word.\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     end
   end
 
@@ -47,10 +48,10 @@ class Game
       secret_word.split('').each_with_index do |v, i|
         display[i] = v if v.casecmp?(letter)
       end
-      puts "\nYes! The word includes #{letter}"
+      puts "\nYes! The word includes \"#{letter}\"\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     else
-      @wrong_guesses += 1
-      puts "\nSorry, the word does not include \"#{letter}\".\nIncorrect Guesses: #{@wrong_guesses}/#{@max_wrong_guesses}"
+      @wrong_guesses.push(letter)
+      puts "\nSorry, the word does not include \"#{letter}\".\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     end
   end
 end
@@ -63,7 +64,7 @@ class Player
   end
 
   def choose_letter
-    puts "Pick a letter or guess the word! These are your previous guesses: #{@guesses.join(', ')}"
+    puts 'Pick a letter or guess the word!'
     begin
       input = gets.chomp.downcase
       raise 'Invalid input! Type a letter or guess the word.' unless input.match?(/^[a-z]+$/i)
