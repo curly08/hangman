@@ -25,7 +25,7 @@ class Game
     puts "\n#{display.join(' ')}\n\n"
     puts "These are your previous incorrect guesses: #{@wrong_guesses.join(', ')}"
     input = choose_letter
-    save_game if input == 'save'
+    save_and_exit_game if input == 'save'
     correct_guess?(input) if input.length > 1 && input != 'save'
     check_for_letter(input) if input.length == 1
     return unless @wrong_guesses.length == @max_wrong_guesses
@@ -36,7 +36,7 @@ class Game
   end
 
   def choose_letter
-    puts 'Pick a letter, guess the word, or type "save" to save your game.'
+    puts 'Pick a letter or guess the word. Type "save" to save your game and exit this game.'
     begin
       input = gets.chomp.downcase
       raise 'Invalid input! Type a letter or guess the word.' unless input.match?(/^[a-z]+$/i)
@@ -82,7 +82,7 @@ class Game
     Game.from_yaml if input == '2'
   end
 
-  def save_game
+  def save_and_exit_game
     Dir.mkdir('saved-games') unless Dir.exist?('saved-games')
     puts "\nWhat would you like to save your game as?"
     begin
@@ -95,6 +95,7 @@ class Game
       puts e.to_s
       retry
     end
+    exit
   end
 
   def to_yaml
