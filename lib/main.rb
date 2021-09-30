@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'pry-byebug'
 
 # Game class
 class Game
   attr_accessor :display, :game_over, :wrong_guesses, :all_guesses
   attr_reader :secret_word, :word_list, :max_wrong_guesses
 
-  def initialize(data)
-    @word_list = File.read('5desk.txt').split.select { |word| word if word.length.between?(5, 12) }
+  def initialize(data = {})
+    word_list = File.read('5desk.txt').split.select { |word| word if word.length.between?(5, 12) }
     @secret_word = data.fetch(:secret_word, word_list.sample)
     @display = data.fetch(:display, Array.new(secret_word.length, '_'))
     @max_wrong_guesses = data.fetch(:max_wrong_guesses, 6)
@@ -29,7 +28,7 @@ class Game
     save_game if input == 'save'
     correct_guess?(input) if input.length > 1 && input != 'save'
     check_for_letter(input) if input.length == 1
-    return unless @wrong_guesses == @max_wrong_guesses
+    return unless @wrong_guesses.length == @max_wrong_guesses
 
     @game_over = true
     puts "\nYou lose because you hit the max number of incorrect guesses.
@@ -76,6 +75,13 @@ class Game
     end
   end
 
+  def self.load_game?
+    puts 'Type 1 to play a new game; type 2 to load a previous game'
+    input = gets.chomp
+    Game.new.play_game if input == '1'
+    Game.from_yaml if input == '2'
+  end
+
   def save_game
     Dir.mkdir('saved-games') unless Dir.exist?('saved-games')
     puts "\nWhat would you like to save your game as?"
@@ -92,26 +98,20 @@ class Game
   end
 
   def to_yaml
-    YAML.dump ({
-      secret_word: @secret_word,
-      display: @display,
-      max_wrong_guesses: @max_wrong_guesses,
-      wrong_guesses: @wrong_guesses,
-      all_guesses: @all_guesses,
-      game_over: @game_over
-    })
+    YAML.dump({ secret_word: @secret_word,
+                display: @display,
+                max_wrong_guesses: @max_wrong_guesses,
+                wrong_guesses: @wrong_guesses,
+                all_guesses: @all_guesses,
+                game_over: @game_over })
   end
 
   def self.from_yaml
     puts 'Which game do you want to load?'
     input = gets.chomp
-    data = YAML.safe_load(File.read("saved-games/#{input}.yaml"))
-    self.new(data)
+    data = YAML.load(File.read("saved-games/#{input}.yaml"))
+    Game.new(data).play_game
   end
 end
 
-# new_game = Game.new
-# new_game.play_game
-
-# load_game = Game.from_yaml
-# load_game.play_game
+Game.load_game?
