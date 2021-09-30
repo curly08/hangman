@@ -31,7 +31,8 @@ class Game
     return unless @wrong_guesses == @max_wrong_guesses
 
     @game_over = true
-    puts "\nYou lose because you hit the max number of incorrect guesses.\nThe word was \"#{secret_word}\"."
+    puts "\nYou lose because you hit the max number of incorrect guesses.
+          \nThe word was \"#{secret_word}\"."
   end
 
   def choose_letter
@@ -55,7 +56,8 @@ class Game
       puts "\nCongrats! You won!"
     else
       @wrong_guesses.push(guess)
-      puts "\nThat is not the correct word.\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
+      puts "\nThat is not the correct word.
+            \nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     end
   end
 
@@ -64,10 +66,12 @@ class Game
       secret_word.split('').each_with_index do |v, i|
         display[i] = v if v.casecmp?(letter)
       end
-      puts "\nYes! The word includes \"#{letter}\"\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
+      puts "\nYes! The word includes \"#{letter}\"
+            \nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     else
       @wrong_guesses.push(letter)
-      puts "\nSorry, the word does not include \"#{letter}\".\nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
+      puts "\nSorry, the word does not include \"#{letter}\".
+            \nIncorrect Guesses: #{@wrong_guesses.length}/#{@max_wrong_guesses}"
     end
   end
 
@@ -98,6 +102,16 @@ class Game
       all_guesses: @all_guesses,
       game_over: @game_over
     })
+  end
+
+  def self.from_yaml(string)
+    data = YAML.safe_load string
+    self.new(data[:secret_word],
+             data[:display],
+             data[:max_wrong_guesses],
+             data[:wrong_guesses],
+             data[:all_guesses],
+             data[:game_over])
   end
 end
 
