@@ -36,7 +36,7 @@ class Game
   end
 
   def choose_letter
-    puts 'Pick a letter or guess the word. Type "save" to save your game and exit this game.'
+    puts 'Pick a letter or guess the word. Type "save" to save and exit this game.'
     begin
       input = gets.chomp.downcase
       raise 'Invalid input! Type a letter or guess the word.' unless input.match?(/^[a-z]+$/i)
