@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'yaml'
 require 'pry-byebug'
 
 # Game class
@@ -7,14 +8,14 @@ class Game
   attr_accessor :display, :game_over, :wrong_guesses, :all_guesses
   attr_reader :secret_word, :word_list, :max_wrong_guesses
 
-  def initialize
+  def initialize(data)
     @word_list = File.read('5desk.txt').split.select { |word| word if word.length.between?(5, 12) }
-    @secret_word = word_list.sample
-    @display = Array.new(secret_word.length, '_')
-    @max_wrong_guesses = 6
-    @wrong_guesses = []
-    @all_guesses = []
-    @game_over = false
+    @secret_word = data.fetch(:secret_word, word_list.sample)
+    @display = data.fetch(:display, Array.new(secret_word.length, '_'))
+    @max_wrong_guesses = data.fetch(:max_wrong_guesses, 6)
+    @wrong_guesses = data.fetch(:wrong_guesses, [])
+    @all_guesses = data.fetch(:all_guesses, [])
+    @game_over = data.fetch(:game_over, false)
   end
 
   def play_game
@@ -82,11 +83,8 @@ class Game
       input = gets.chomp
       raise 'Invalid filename!' unless input.match?(/^[A-Za-z0-9._ -]+$/i)
 
-      filename = "saved-games/#{input}.txt"
-      # save game
-      File.open(filename, 'w') do |file|
-        file.puts to_yaml
-      end
+      filename = "saved-games/#{input}.yaml"
+      File.open(filename, 'w') { |file| file.puts to_yaml }
     rescue StandardError => e
       puts e.to_s
       retry
@@ -104,16 +102,16 @@ class Game
     })
   end
 
-  def self.from_yaml(string)
-    data = YAML.safe_load string
-    self.new(data[:secret_word],
-             data[:display],
-             data[:max_wrong_guesses],
-             data[:wrong_guesses],
-             data[:all_guesses],
-             data[:game_over])
+  def self.from_yaml
+    puts 'Which game do you want to load?'
+    input = gets.chomp
+    data = YAML.safe_load(File.read("saved-games/#{input}.yaml"))
+    self.new(data)
   end
 end
 
-new_game = Game.new
-new_game.play_game
+# new_game = Game.new
+# new_game.play_game
+
+# load_game = Game.from_yaml
+# load_game.play_game
